@@ -96,8 +96,9 @@ function startAdapter(options) {
             var username = adapter.config.fritz_user;
             var password = adapter.config.fritz_pw;
             var moreParam = adapter.config.fritz_ip;
-        
-            var fritz = new Fritz(username, password||"", moreParam||"");
+            var strictssl = adapter.config.fritz_strictssl;
+            
+            var fritz = new Fritz(username, password||"", moreParam||"", strictssl||true);
         
             // you can use the ack flag to detect if it is status (true) or command (false)
             if (state && !state.ack) {
@@ -442,8 +443,9 @@ function startAdapter(options) {
                         var username = adapter.config.fritz_user;
                         var password = adapter.config.fritz_pw;
                         var moreParam = adapter.config.fritz_ip;
+                        var strictssl = adapter.config.fritz_strictssl;
                         
-                        var fritz = new Fritz(username, password||"", moreParam||"");
+                        var fritz = new Fritz(username, password||"", moreParam||"", strictssl||true);
                         fritz.getColorDefaults(obj.message).then(function(statisticinfos) { //obj.message should be ain of device requested
                             var devicestats = parser.xml2json(colorinfos);
                             result = devicestats;
