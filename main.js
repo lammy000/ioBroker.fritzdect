@@ -1582,52 +1582,264 @@ function main() {
                         });
                     }
                     else if((device.functionbitmask & 512) == 512){ //switch
-                        adapter.log.debug('updating Switch '+ device.name); 
-                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'name : ' + device.name);
-                        adapter.setState('DECT200_'+ device.identifier +'.name', {val: device.name, ack: true});
-                                           
-                        let convertPresent = device.present == 1 ? true: false;                    
-                        adapter.log.debug('DECT200_'+ device.identifier+ ' : ' +'present : ' + convertPresent + ' (' + device.present + ')');
-                        adapter.setState('DECT200_'+ device.identifier +'.present', {val: convertPresent, ack: true});
+
+                        adapter.log.debug('neu.name');
+                        adapter.getState('DECT200_'+ device.identifier +'.name', function (err, state) {
+                            var old_value = state.val;
+                            var new_value = device.name;
+                            var result = "nothing";
+
+                            adapter.log.debug('neu.name_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                            // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                            if (old_value != new_value){
+                                    // Etwas Debug Loggen fuer die Entwicklung
+                                    adapter.log.debug('neu.name_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                    // Werte loggen und in Objekt schreiben
+                                    adapter.log.debug('updating Switch '+ device.name);
+                                    adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'name : ' + device.name);
+                                    adapter.setState('DECT200_'+ device.identifier +'.name', {val: device.name, ack: true});
+                            };
+                        }
+                        );
+
+
+                        adapter.log.debug('neu.present');
+                        adapter.getState('DECT200_'+ device.identifier +'.present', function (err, state) {
+                            var old_value = state.val;
+                            var new_value = device.present;
+                            var result = "nothing";
+
+                            adapter.log.debug('neu.present_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                            // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                            if (old_value != new_value){
+                                    // Etwas Debug Loggen fuer die Entwicklung
+                                    adapter.log.debug('neu.present_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                    // Werte loggen und in Objekt schreiben
+                                    let convertPresent = device.present == 1 ? true: false;
+                                    adapter.log.debug('DECT200_'+ device.identifier+ ' : ' +'present : ' + convertPresent + ' (' + device.present + ')');
+                                    adapter.setState('DECT200_'+ device.identifier +'.present', {val: convertPresent, ack: true});
+                            };
+                        }
+                        );
+
 
                         if ( (device.present === "0") ||  (device.present === 0) || (device.present === false )){
                             adapter.log.warn('DECT200_'+ device.identifier + ' is not present, check the device connection, no values are written');
                             }
                         else {
-                            let convertSwitchState = device.switch.state == 1 ? true: false;
-                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'state :' + convertSwitchState + '(' + device.switch.state+')');
-                            adapter.setState('DECT200_'+ device.identifier +'.state', {val: convertSwitchState, ack: true});
 
-                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'power :' + parseFloat(device.powermeter.power)/1000);
-                            adapter.setState('DECT200_'+ device.identifier +'.power', {val: parseFloat(device.powermeter.power)/1000, ack: true});
+                            adapter.log.debug('neu.state');
+                            adapter.getState('DECT200_'+ device.identifier +'.state', function (err, state1) {
+                                var old_value = state1.val;
+                                var new_value = device.switch.state;
+                                var result = "nothing";
 
-                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'energy :' + device.powermeter.energy);
-                            adapter.setState('DECT200_'+ device.identifier +'.energy', {val: device.powermeter.energy, ack: true});  
+                                adapter.log.debug('neu.state_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                if (old_value != new_value){
+                                        // Etwas Debug Loggen fuer die Entwicklung
+                                        adapter.log.debug('neu.state_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                        // Werte loggen und in Objekt schreiben
+                                        let convertSwitchState = device.switch.state == 1 ? true: false;
+                                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'state :' + convertSwitchState + '(' + device.switch.state+')');
+                                        adapter.setState('DECT200_'+ device.identifier +'.state', {val: convertSwitchState, ack: true});
+                                };
+                            }
+                            );
 
-                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'mode : ' + device.switch.mode);
-                            adapter.setState('DECT200_'+ device.identifier +'.mode', {val: device.switch.mode, ack: true});
 
-                            let convertLock = device.switch.lock == 1 ? true: false;
-                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'lock : ' + convertLock + ' (' +  device.switch.lock + ')');
-                            adapter.setState('DECT200_'+ device.identifier +'.lock', {val: convertLock, ack: true});
+                            adapter.log.debug('neu.power');
+                            var min_delta_percent = 0.05;
+                            adapter.getState('DECT200_'+ device.identifier +'.power', function (err, state) {
+                                var old_value = parseFloat(state.val);
+                                var new_value = parseFloat(device.powermeter.power)/1000;
+                                if (old_value - new_value < 0){
+                                    // Alter Wert minus neuer Wert *-1 da das Ergebnis Negativ ist und fuer den spaeteren Vergleich unbrauchbar ist
+                                    var result = old_value - new_value *-1
+                                }
+                                else {
+                                    // Alter Wert minus neuer Wert ohne *-1 da das Ergebnis positiv ist
+                                    var result = old_value - new_value
+                                };
 
-                            let convertDeviceLock = device.switch.devicelock == 1 ? true: false;
-                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'devicelock : ' + convertDeviceLock + ' (' + device.switch.devicelock + ')');
-                            adapter.setState('DECT200_'+ device.identifier +'.devicelock', {val: convertDeviceLock, ack: true});
+                                adapter.log.debug('neu.power_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                if (result / new_value > min_delta_percent){
+                                        // Etwas Debug Loggen fuer die Entwicklung
+                                        adapter.log.debug('neu.power_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                        // Werte loggen und in Objekt schreiben
+                                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'power :' + new_value);
+                                        adapter.setState('DECT200_'+ device.identifier +'.power', {val: new_value, ack: true});
+                                };
+                            }
+                            );
+
+                            adapter.log.debug('neu.energy');
+                            adapter.getState('DECT200_'+ device.identifier +'.energy', function (err, state) {
+                                var old_value = parseFloat(state.val);
+                                var new_value = parseFloat(device.powermeter.energy);
+                                if (old_value - new_value < 0){
+                                    // Alter Wert minus neuer Wert *-1 da das Ergebnis Negativ ist und fuer den spaeteren Vergleich unbrauchbar ist
+                                    var result = old_value - new_value *-1
+                                }
+                                else {
+                                    // Alter Wert minus neuer Wert ohne *-1 da das Ergebnis positiv ist
+                                    var result = old_value - new_value
+                                };
+
+                                adapter.log.debug('neu.energy_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                if (result / new_value > min_delta_percent){
+                                        // Etwas Debug Loggen fuer die Entwicklung
+                                        adapter.log.debug('neu.energy_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                        // Werte loggen und in Objekt schreiben
+                                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'energy :' + device.powermeter.energy);
+                                        adapter.setState('DECT200_'+ device.identifier +'.energy', {val: device.powermeter.energy, ack: true});
+                                };
+                            }
+                            );
+
+                            adapter.log.debug('neu.mode');
+                            adapter.getState('DECT200_'+ device.identifier +'.mode', function (err, state) {
+                                var old_value = state.val;
+                                var new_value = device.switch.mode;
+                                var result = "nothing";
+
+                                adapter.log.debug('neu.mode_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                if (old_value != new_value){
+                                        // Etwas Debug Loggen fuer die Entwicklung
+                                        adapter.log.debug('neu.mode_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                        // Werte loggen und in Objekt schreiben
+                                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'mode : ' + device.switch.mode);
+                                        adapter.setState('DECT200_'+ device.identifier +'.mode', {val: device.switch.mode, ack: true});
+                                };
+                            }
+                            );
+
+                            adapter.log.debug('neu.lock');
+                            adapter.getState('DECT200_'+ device.identifier +'.lock', function (err, state) {
+                                var old_value = state.val;
+                                var new_value = device.switch.lock;
+                                var result = "nothing";
+
+                                adapter.log.debug('neu.mode_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                if (old_value != new_value){
+                                        // Etwas Debug Loggen fuer die Entwicklung
+                                        adapter.log.debug('neu.mode_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                        // Werte loggen und in Objekt schreiben
+                                        let convertLock = device.switch.lock == 1 ? true: false;
+                                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'lock : ' + convertLock + ' (' +  device.switch.lock + ')');
+                                        adapter.setState('DECT200_'+ device.identifier +'.lock', {val: convertLock, ack: true});
+                                };
+                            }
+                            );
+
+                            adapter.log.debug('neu.devicelock');
+                            adapter.getState('DECT200_'+ device.identifier +'.devicelock', function (err, state) {
+                                var old_value = state.val;
+                                var new_value = device.switch.devicelock;
+                                var result = "nothing";
+
+                                adapter.log.debug('neu.devicelock_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                if (old_value != new_value){
+                                        // Etwas Debug Loggen fuer die Entwicklung
+                                        adapter.log.debug('neu.devicelock_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                        // Werte loggen und in Objekt schreiben
+                                        let convertDeviceLock = device.switch.devicelock == 1 ? true: false;
+                                        adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'devicelock : ' + convertDeviceLock + ' (' + device.switch.devicelock + ')');
+                                        adapter.setState('DECT200_'+ device.identifier +'.devicelock', {val: convertDeviceLock, ack: true});
+                                };
+                            }
+                            );
+
 
                             if(device.temperature){
-                                adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'temp : ' + (parseFloat(device.temperature.celsius))/10);
-                                adapter.setState('DECT200_'+ device.identifier +'.temp', {val: (parseFloat(device.temperature.celsius))/10, ack: true});
+                                adapter.log.debug('neu.temp');
+                                adapter.getState('DECT200_'+ device.identifier +'.temp', function (err, state) {
+                                    var old_value = parseFloat(state.val);
+                                    var new_value = parseFloat(device.temperature.celsius)/10;
+                                    if (old_value - new_value < 0){
+                                        // Alter Wert minus neuer Wert *-1 da das Ergebnis Negativ ist und fuer den spaeteren Vergleich unbrauchbar ist
+                                        var result = old_value - new_value *-1
+                                    }
+                                    else {
+                                        // Alter Wert minus neuer Wert ohne *-1 da das Ergebnis positiv ist
+                                        var result = old_value - new_value
+                                    };
 
-                                adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'temp offset: ' + (parseFloat(device.temperature.offset))/10);
-                                adapter.setState('DECT200_'+ device.identifier +'.temp_offset', {val: (parseFloat(device.temperature.offset))/10, ack: true});
+                                    adapter.log.debug('neu.temp_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                    // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                    if (result / new_value > min_delta_percent){
+                                            // Etwas Debug Loggen fuer die Entwicklung
+                                            adapter.log.debug('neu.temp_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                            // Werte loggen und in Objekt schreiben
+                                            let convertDeviceLock = device.switch.devicelock == 1 ? true: false;
+                                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'temp : ' + (parseFloat(device.temperature.celsius))/10);
+                                            adapter.setState('DECT200_'+ device.identifier +'.temp', {val: (parseFloat(device.temperature.celsius))/10, ack: true});
+                                    };
+                                }
+                                );
+
+                                adapter.log.debug('neu.temp_offset');
+                                adapter.getState('DECT200_'+ device.identifier +'.temp_offset', function (err, state) {
+                                    var old_value = parseFloat(state.val);
+                                    var new_value = parseFloat(device.temperature.offset)/10;
+                                    if (old_value - new_value < 0){
+                                        // Alter Wert minus neuer Wert *-1 da das Ergebnis Negativ ist und fuer den spaeteren Vergleich unbrauchbar ist
+                                        var result = old_value - new_value *-1
+                                    }
+                                    else {
+                                        // Alter Wert minus neuer Wert ohne *-1 da das Ergebnis positiv ist
+                                        var result = old_value - new_value
+                                    };
+
+                                    adapter.log.debug('neu.temp_offset_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                    // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                    if (result / new_value > min_delta_percent){
+                                            // Etwas Debug Loggen fuer die Entwicklung
+                                            adapter.log.debug('neu.temp_offset_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                            // Werte loggen und in Objekt schreiben
+                                            let convertDeviceLock = device.switch.devicelock == 1 ? true: false;
+                                            adapter.log.debug('DECT200_'+ device.identifier + ' : '  +'temp offset : ' + (parseFloat(device.temperature.offset))/10);
+                                            adapter.setState('DECT200_'+ device.identifier +'.temp_offset', {val: (parseFloat(device.temperature.offset))/10, ack: true});
+                                    };
+                                }
+                                );
                             }
 
                             if(device.powermeter.voltage){
-                            //if( adapter.config.dect200volt_en === 'true' || adapter.config.dect200volt_en  === true || adapter.config.dect200volt_en  === 1 ) {
-                                adapter.log.debug('DECT200_'+ device.identifier + ' : ' +'voltage : ' + device.powermeter.voltage / 1000);
-                                adapter.setState('DECT200_'+ device.identifier +'.voltage', {val: device.powermeter.voltage / 1000, ack: true});
-                            }  
+
+                                adapter.log.debug('neu.voltage');
+                                var min_delta_percent = 0.05;
+                                adapter.getState('DECT200_'+ device.identifier +'.voltage', function (err, state) {
+                                    var old_value = parseFloat(state.val);
+                                    var new_value = parseFloat(device.powermeter.voltage)/1000;
+                                    if (old_value - new_value < 0){
+                                        // Alter Wert minus neuer Wert *-1 da das Ergebnis Negativ ist und fuer den spaeteren Vergleich unbrauchbar ist
+                                        var result = old_value - new_value *-1
+                                    }
+                                    else {
+                                        // Alter Wert minus neuer Wert ohne *-1 da das Ergebnis positiv ist
+                                        var result = old_value - new_value
+                                    };
+
+                                    adapter.log.debug('neu.voltage_Neue Daten: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                    // Auwerten ob die neue Prozentuale Abweichung größer ist als die Minimal Definierte Prozentuale Abweichung min_delta_percent
+                                    if (result / new_value > min_delta_percent){
+                                            // Etwas Debug Loggen fuer die Entwicklung
+                                            adapter.log.debug('neu.voltage_Unterschied Ermittelt: old_value: ' + old_value + ' new_value: ' + new_value + ' result: ' + result);
+                                            // Werte loggen und in Objekt schreiben
+                                            //if( adapter.config.dect200volt_en === 'true' || adapter.config.dect200volt_en  === true || adapter.config.dect200volt_en  === 1 ) {
+                                                adapter.log.debug('DECT200_'+ device.identifier + ' : ' +'voltage : ' + device.powermeter.voltage / 1000);
+                                                adapter.setState('DECT200_'+ device.identifier +'.voltage', {val: device.powermeter.voltage / 1000, ack: true});
+                                    };
+                                }
+                                );
+
+                            }
                         }
                     }
                     else if((device.functionbitmask & 64) == 64){ //thermostat
